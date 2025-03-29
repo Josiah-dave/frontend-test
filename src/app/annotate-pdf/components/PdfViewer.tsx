@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 // Set the worker source for pdfjs with https to avoid CORS issues
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://app.unpkg.com/pdfjs-dist@2.3.200/files/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`
 
 interface PDFViewerProps {
   file: File | null;
