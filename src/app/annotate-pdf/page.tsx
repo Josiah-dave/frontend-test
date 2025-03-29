@@ -63,10 +63,6 @@ const Index = () => {
     try {
       toast.info("Preparing PDF for export...");
 
-      // In a real implementation, we would use a library like pdf-lib to apply
-      // the annotations to the PDF document. For this demo, we'll just download
-      // the original PDF.
-
       const url = URL.createObjectURL(file);
       const a = document.createElement("a");
       a.href = url;
@@ -101,7 +97,7 @@ const Index = () => {
 
           <div className="flex-1 overflow-hidden border border-gray-200 rounded-lg bg-white">
             <PDFViewer
-              // ref={pdfViewerRef}
+              ref={pdfViewerRef}
               file={file}
               currentTool={currentTool}
               currentColor={currentColor}

@@ -10,14 +10,14 @@ interface ColorPickerProps {
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ currentColor, onColorChange }) => {
   const colors = [
-    "#FFEB3B", // Yellow
-    "#4CAF50", // Green
-    "#2196F3", // Blue
-    "#F44336", // Red
-    "#9C27B0", // Purple
-    "#FF9800", // Orange
-    "#607D8B", // Blue Grey
-    "#000000", // Black
+    "#FFEB3B",
+    "#4CAF50", 
+    "#2196F3", 
+    "#F44336", 
+    "#9C27B0", 
+    "#FF9800", 
+    "#607D8B", 
+    "#000000", 
   ];
 
   return (

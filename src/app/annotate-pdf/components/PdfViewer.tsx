@@ -1,5 +1,11 @@
-'use client'
-import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
+"use client";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
@@ -9,10 +15,13 @@ import SignatureCanvas from "./SignatureCanvas";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-// Set the worker source for pdfjs with https to avoid CORS issues
-pdfjs.GlobalWorkerOptions.workerSrc = `https://app.unpkg.com/pdfjs-dist@2.3.200/files/build/pdf.worker.min.js`;
+
+// pdfjs.GlobalWorkerOptions.workerSrc = `https://app.unpkg.com/pdfjs-dist@2.3.200/files/build/pdf.worker.min.js`;
 // pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 // pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`
+
+import { Viewer, Worker } from "@react-pdf-viewer/core";
+import "@react-pdf-viewer/core/lib/styles/index.css";
 
 interface PDFViewerProps {
   file: File | null;
@@ -43,26 +52,46 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
     const [pageHeight, setPageHeight] = useState<number>(0);
     const [scale, setScale] = useState<number>(1.0);
     const [annotations, setAnnotations] = useState<Annotation[]>([]);
-    const [showSignatureCanvas, setShowSignatureCanvas] = useState<boolean>(false);
-    const [signaturePosition, setSignaturePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [showSignatureCanvas, setShowSignatureCanvas] =
+      useState<boolean>(false);
+    const [signaturePosition, setSignaturePosition] = useState<{
+      x: number;
+      y: number;
+    }>({ x: 0, y: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
     const [isDrawing, setIsDrawing] = useState<boolean>(false);
     const [commentText, setCommentText] = useState<string>("");
-    const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
+    const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(
+      null
+    );
+
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
+    // Handle file selection and create an object URL
+    const handleFileUpload = () => {
+      // const file = event.target.files?.[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        setPdfUrl(url);
+      }
+    };
 
     // Exposing the clearAnnotations method to the parent component through the ref
     useImperativeHandle(ref, () => ({
       clearAnnotations: () => {
         setAnnotations([]);
         toast.success("All annotations cleared");
-      }
+      },
     }));
 
     useEffect(() => {
+      if (file) {
+        handleFileUpload();
+      }
       if (numPages !== null) {
         onPageChange(pageNumber, numPages);
       }
-    }, [pageNumber, numPages, onPageChange]);
+    }, [pageNumber, numPages, onPageChange, file]);
 
     const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
       setNumPages(numPages);
@@ -99,7 +128,9 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
         // Creating a simple annotation for now - in a real app this would
         // need to be more sophisticated to actually map to text positions
         const newAnnotation: Annotation = {
-          id: `annotation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `annotation-${Date.now()}-${Math.random()
+            .toString(36)
+            .substr(2, 9)}`,
           type: currentTool,
           pageNumber,
           x: Math.min(x, signaturePosition.x),
@@ -110,10 +141,14 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
         };
 
         setAnnotations([...annotations, newAnnotation]);
-        toast.success(`${currentTool === "highlight" ? "Highlight" : "Underline"} added`);
+        toast.success(
+          `${currentTool === "highlight" ? "Highlight" : "Underline"} added`
+        );
       } else if (currentTool === "comment") {
         const commentAnnotation: Annotation = {
-          id: `annotation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `annotation-${Date.now()}-${Math.random()
+            .toString(36)
+            .substr(2, 9)}`,
           type: "comment",
           pageNumber,
           x,
@@ -147,7 +182,9 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
       }
 
       const newSignature: Annotation = {
-        id: `signature-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `signature-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
         type: "signature",
         pageNumber,
         x: signaturePosition.x,
@@ -246,7 +283,18 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
             >
-              <Document
+              {pdfUrl && (
+                <div className="w-full h-[80vh]">
+                  <Worker
+                    workerUrl={`https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`}
+                  >
+                    <Viewer fileUrl={pdfUrl} />
+                    {renderAnnotations()}
+                  </Worker>
+                </div>
+              )}
+
+              {/* <Document
                 file={file}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
@@ -269,7 +317,7 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
                   renderMode="canvas"
                 />
                 {renderAnnotations()}
-              </Document>
+              </Document> */}
             </div>
 
             {showSignatureCanvas && (
@@ -285,7 +333,8 @@ const PDFViewer = forwardRef<{ clearAnnotations: () => void }, PDFViewerProps>(
                 <textarea
                   className="w-full border rounded p-2"
                   value={
-                    annotations.find((a) => a.id === selectedAnnotation)?.content || ""
+                    annotations.find((a) => a.id === selectedAnnotation)
+                      ?.content || ""
                   }
                   onChange={(e) =>
                     handleCommentChange(selectedAnnotation, e.target.value)

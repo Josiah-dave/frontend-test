@@ -96,10 +96,12 @@ const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
       
       <div className="flex items-center space-x-2">
         <Button
+        
           variant="ghost"
           size="icon"
           onClick={() => onChangePage(currentPage - 1)}
-          disabled={currentPage <= 1}
+          disabled
+          // disabled={currentPage <= 1}
           className="h-9 w-9"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -111,7 +113,8 @@ const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => onChangePage(currentPage + 1)}
-          disabled={currentPage >= totalPages}
+          disabled
+          // disabled={currentPage >= totalPages}
           className="h-9 w-9"
         >
           <ChevronRight className="h-5 w-5" />

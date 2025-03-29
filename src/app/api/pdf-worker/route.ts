@@ -1,13 +1,6 @@
 import { NextResponse } from "next/server";
 
-// export async function GET() {
-//   // Redirect to the CDN URL
-//   return NextResponse.redirect(
-//     "https://unpkg.com/pdfjs-dist@2.0.489/build/pdf.worker.min.js"
-//   );
-// }
-
-// Alternatively, if you want to serve from your own endpoint:
+// proxifying the worker CDN
 export async function GET() {
   try {
     const workerUrl =
@@ -23,7 +16,7 @@ export async function GET() {
     return new NextResponse(workerContent, {
       headers: {
         "Content-Type": "application/javascript",
-        "Cache-Control": "public, max-age=31536000", // Cache for 1 year
+        "Cache-Control": "public, max-age=31536000", 
       },
     });
   } catch (error) {

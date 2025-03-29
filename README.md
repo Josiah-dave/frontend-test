@@ -1,73 +1,112 @@
-## Frontend Technical Assessment - Document Signer & Annotation Tool
+# PDF Annotation Tool
 
 ## Overview
+The **PDF Annotation Tool** is a web application built using Next.js that allows users to view and annotate PDF documents. It leverages `@react-pdf-viewer/core` for rendering PDFs and includes various UI enhancements for a smooth user experience.
 
-This technical assessment is designed to evaluate your skills in building interactive, modern web applications using Next.js. You'll be creating a single-page document signer and annotation tool that allows users to work with PDF documents.
+---
 
-## Requirements
+## Setup & Installation
+### Prerequisites
+Ensure you have the following installed:
+- **Node.js** (v18+ recommended)
+- **npm** or **yarn**
 
-### Core Functionality
+### Steps to Run the Project
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/Josiah-dave/frontend-test.git
+   cd pdf-annotation-tool
+   ```
+2. **Install dependencies**:
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
+3. **Run the development server**:
+   ```sh
+   npm run dev
+   # or
+   yarn dev
+   ```
+4. Open `http://localhost:3000` in your browser to view the application.
 
-1. **Document Upload**
-   - Users should be able to upload PDF documents
-   - Implement drag-and-drop functionality and/or file selection dialog
-   - Display uploaded document in the viewport
+5. **Build for production**:
+   ```sh
+   npm run build
+   npm start
+   ```
 
-2. **Annotation Features**
-   - Implement the following annotation capabilities:
-     - Highlight text with customizable colors
-     - Underline text with customizable colors
-     - Add comments attached to specific parts of the document
-     - Draw signatures anywhere on the document
+---
 
-3. **Document Export**
-   - Allow users to export the annotated document as a PDF
-   - All annotations and signatures must be properly embedded in the exported PDF
-   - Exported document should maintain the quality of the original
+## Dependencies & Tools Used
+### Core Libraries
+- **Next.js** (15.2.4) – Framework for server-side rendering and static site generation
+- **React** (19.0.0) – Frontend library for building UI components
+- **Tailwind CSS** – For styling the application
+- **Zustand** – State management
+- **React Hook Form** – Form handling and validation
+- **PDF.js (`pdfjs-dist`)** – PDF rendering engine
+- **@react-pdf-viewer/core** – PDF viewing and annotation UI
+- **react-pdf** – Alternative PDF rendering library
 
-### Technical Requirements
+### Additional Tools
+- **JSPDF** – PDF manipulation library
+- **Lucide-react** – Icon set
+- **React Signature Canvas** – Signature input for PDFs
+- **Radix UI** – Accessible UI components
 
-- Use **Next.js** as your framework
-- Implement a single-page application (SPA) design where all actions occur without page reloads
-- Create a responsive design that works well on different screen sizes
-- Ensure the application has a clean, intuitive, and professional UI/UX
+---
 
-### UI/UX Requirements
+## Challenges Faced & Solutions
+### 1. **PDF.js Worker Version Mismatch**
+**Issue:**
+```
+The API version "2.16.105" does not match the Worker version "3.10.111".
+```
+**Solution:**
+- Downgraded `pdfjs-dist` to match the worker version required by `@react-pdf-viewer/core`.
+- Explicitly set the worker source:
+  ```js
+  import { pdfjs } from "react-pdf";
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`;
+  ```
 
-- Design a sleek, modern interface with clear visual hierarchy
-- Implement intuitive controls for all annotation tools
-- Create smooth transitions between different states of the application
-- Provide appropriate feedback for user actions (loading states, success/error messages)
+### 2. **PDF Re-rendering on Tool Click**
+**Issue:** The PDF viewer re-renders every time a tool (e.g comment, highlight) is clicked.
 
-## Evaluation Criteria
+**Possible Causes & Fixes:**
+- Ensured the document state is memoized using `useMemo()`.
+- Used Zustand for state management to persist tool settings without forcing re-renders.
+- Investigating further optimizations using React `useCallback()`.
 
-Your submission will be evaluated based on:
+### 3. **CORS Issues with External PDF Workers**
+**Issue:** Some PDF.js worker URLs were blocked due to CORS policies.
 
-1. **Functionality** - Does the application meet all the requirements?
-2. **Code Quality** - Is your code well-structured, readable, and maintainable?
-3. **UI/UX Design** - Is the interface intuitive, responsive, and visually appealing?
-4. **Performance** - Does the application handle operations efficiently?
-5. **Best Practices** - Do you follow modern web development best practices?
+**Solution:**
+- Used the officially recommended worker CDN: `https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`
+- Considered proxifying worker file for full control.
 
-## Submission Guidelines
+---
 
-1. Fork this repository
-2. Implement your solution
-3. Create a README with:
-   - Setup and running instructions
-   - Any libraries or tools you used and why
-   - Any challenges you faced and how you solved them
-   - Any features you would add if you had more time
-4. Submit a pull request or send us a link to your repository
+## Future Enhancements
+If given more time, the following features would be added:
+1. **Offline PDF Support** – Allow users to upload and annotate PDFs without an internet connection.
+2. **Cloud Storage Integration** – Save annotated PDFs to Google Drive or Dropbox.
+4. **Advanced Annotations** – Add text highlighting, sticky notes, and drawing tools.
+5. **Export Options** – Support exporting PDFs with embedded annotations.
 
-## Time Allocation
+---
 
-You have three days to complete this assessment. We estimate it should take approximately 8-10 hours of focused work.
+## Contribution Guidelines
+If you’d like to contribute:
+- Fork the repository
+- Create a feature branch
+- Submit a pull request with a detailed description
 
-## Questions
-
-If you have any questions or need clarification, please reach out to [dev.ritease@gmail.com](mailto:dev.ritease@gmail.com).
-
-Good luck!
-
+---
+This project has been a challenging yet rewarding experience. It has taught me the importance of version control,
+dependency management, and debugging in a real-world application. I hope this documentation serves as a valuable resource
+for anyone looking to build a similar PDF viewer application. Thank you for your time, and I look
+forward to your feedback!
 
